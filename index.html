@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="styles.css">
+        <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.js"></script> 
+        <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+        <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js"></script>
+        <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-router-dom/5.1.2/react-router-dom.js"></script>
+    </head>
+    </head>
+    <body>
+        <div id="root"></div>
+        
+        <script type="text/babel" async defer>
+        const { HashRouter, Link, Route, Switch, Redirect } = ReactRouterDOM;
+        const { Component } = React;
+        const root = document.querySelector('#root');
+
+        class App extends Component {
+            constructor() {
+                super();
+                this.state = {
+                    companies: [],
+                }
+            }
+
+            componentDidMount() {
+                axios.get('https://acme-users-api-rev.herokuapp.com/api/companies')
+                    .then(response => response.data)
+                    .then(companies => {
+                        this.setState({ companies });
+                        console.log(companies);
+                    });
+            }
+
+            render() {
+                const { companies } = this.state;
+                if (!companies.length) {
+                    return (<p> Loading ...</p>)
+                }
+                return (
+                    <HashRouter>
+                        <Route render={({ location }) => <Nav path={location.pathname} companyCount={companies.length}/>} />
+                        <Switch>
+                            <Route path='/home' component={ Home } />
+                            <Route path='/companies' render={() => <CompanyList companies={ companies} /> } />
+                            <Route path='/companies/:id' render={({ match }) => <Profits id={match.params.id} />} />
+                        </Switch>
+                    </HashRouter>
+                )
+            }
+        }
+        
+        class Nav extends Component {
+            constructor(props) {
+                super(props);
+            }
+            
+            render() {
+                const { companyCount, path } = this.props;
+                return (
+                <nav>
+                    <Link to='/home' className={ path === '/home' ? 'tab-selected' : 'tab'}>Home</Link> 
+                    <Link to='/companies' className={ path === '/companies' ? 'tab-selected' : 'tab'}>Companies ({companyCount})</Link> 
+                </nav>
+                )
+            }
+        }
+
+        const Home = () => {
+            return (
+                <div id="home">
+                    <p> Welcome </p>
+                </div>
+            )
+        }
+        
+        
+        ReactDOM.render(React.createElement(App), root);
+        </script>
+    </body>
+</html>

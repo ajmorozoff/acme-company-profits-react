@@ -1,0 +1,11 @@
+.tab {
+    padding: 0.5rem;
+    color: rgba(0,0,0,0.6);
+    flex: 1;
+}
+
+.tab-selected {
+    background-color: rgb(255, 142, 142);
+    color: rgba(0,0,0,1);
+    font-weight: 600;
+}
